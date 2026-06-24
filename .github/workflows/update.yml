@@ -1,0 +1,74 @@
+name: DevPulse Auto Update
+
+on:
+  schedule:
+    # 03:17 UTC daily
+    - cron: "17 3 * * *"
+    # 15:42 UTC on Mondays and Thursdays
+    - cron: "42 15 * * 1,4"
+  workflow_dispatch:  # allows manually triggering a run from the Actions tab
+
+permissions:
+  contents: write  # required so the workflow can commit and push back
+
+concurrency:
+  group: devpulse-auto-update
+  cancel-in-progress: false  # never cancel a run that's already committing
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run DevPulse maintenance script
+        id: run_update
+        # notes/ and journal/ are hand-written only.
+        # This script only touches quotes/, resources/, README.md, and logs/.
+        continue-on-error: true
+        run: python scripts/update.py
+
+      - name: Warn if the script failed
+        if: steps.run_update.outcome == 'failure'
+        run: |
+          echo "warning: scripts/update.py exited with an error this run. Check the step output above for details."
+
+      - name: Check whether anything actually changed
+        id: check
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name  "devpulse-bot"
+          git config user.email "devpulse-bot@users.noreply.github.com"
+          MSGFILE=".commitmessage.txt"
+          if [ -f "$MSGFILE" ]; then
+            COMMITMSG=$(cat "$MSGFILE")
+          else
+            COMMITMSG="chore(auto): scheduled DevPulse maintenance update"
+          fi
+          rm -f "$MSGFILE"
+          git add -A
+          git commit -m "$COMMITMSG"
+          git pull --rebase
+          git push
+
+      - name: Report no-op
+        if: steps.check.outputs.changed == 'false'
+        run: |
+          echo "No new content this run — pools may already be fully present. Nothing to commit."
