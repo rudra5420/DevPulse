@@ -35,3 +35,6 @@ A running collection of quotes worth remembering. Kept short, attributed where t
 ---
 
 *Add new quotes below in the same blockquote format. One quote per addition keeps this easy to scan.*
+
+> Optimism is an occupational hazard of programming; feedback is the treatment.
+> — Kent Beck
