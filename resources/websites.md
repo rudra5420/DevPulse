@@ -11,3 +11,4 @@ Sites used regularly enough to be worth bookmarking permanently.
 ---
 
 *Automation note: the GitHub Action attached to this repo may add new entries here from a small curated pool, skipping anything already listed. Manually added entries are always welcome too.*
+- **[The Odin Project](https://www.theodinproject.com)** — Free, project-based full-stack web development curriculum.
