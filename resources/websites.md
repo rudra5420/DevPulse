@@ -14,3 +14,4 @@ Sites used regularly enough to be worth bookmarking permanently.
 - **[The Odin Project](https://www.theodinproject.com)** — Free, project-based full-stack web development curriculum.
 - **[Distill.pub](https://distill.pub)** — Visual, in-depth explanations of machine learning concepts.
 - **[Codeforces](https://codeforces.com)** — Competitive programming contests and a deep archive of rated problems.
+- **[Project Euler](https://projecteuler.net)** — Math/programming challenges that strengthen algorithmic thinking.
