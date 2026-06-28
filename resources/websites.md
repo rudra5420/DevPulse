@@ -15,3 +15,4 @@ Sites used regularly enough to be worth bookmarking permanently.
 - **[Distill.pub](https://distill.pub)** — Visual, in-depth explanations of machine learning concepts.
 - **[Codeforces](https://codeforces.com)** — Competitive programming contests and a deep archive of rated problems.
 - **[Project Euler](https://projecteuler.net)** — Math/programming challenges that strengthen algorithmic thinking.
+- **[Real Python](https://realpython.com)** — In-depth Python tutorials and best-practice write-ups.
