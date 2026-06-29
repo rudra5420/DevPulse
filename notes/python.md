@@ -9,7 +9,7 @@ Built-in categories:
 - **Sequence** — `str`, `list`, `tuple`. Strings and tuples are immutable; lists are mutable.
 - **Mapping** — `dict`. Insertion-ordered since Python 3.7.
 - **Set** — `set`, `frozenset`. Unordered, unique elements, O(1) average membership check.
-- **Boolean** — `bool`, subclass of int (`True == 1`, `False == 0`).
+- **Boolean** — `bool` subclass of int (`True == 1`, `False == 0`).
 - **NoneType** — `None`, Python's null.
 
 Mutability matters:
@@ -18,7 +18,6 @@ a = [1, 2, 3]
 b = a          # b refers to the SAME list
 b.append(4)
 print(a)       # [1, 2, 3, 4] — a changed too!
-
 c = (1, 2, 3)  # tuple — immutable, safe to use as a dict key
 ```
 
@@ -32,6 +31,7 @@ def add(x: int, y: int) -> int:
 
 ## 2. OOP in Python
 
+Basics:
 ```python
 class Animal:
     def __init__(self, name: str):
@@ -48,9 +48,9 @@ Key concepts:
 - **Encapsulation** — Python uses convention, not enforcement (`_protected`, `__private` name-mangled, not truly private).
 - **Inheritance** — `class Dog(Animal)`: Dog inherits Animal's attributes/methods.
 - **Polymorphism** — different classes implementing the same method name (`speak`), called interchangeably.
-- **Dunder methods** — `__init__`, `__str__`, `__repr__`, `__eq__`, `__len__`, etc. let custom classes integrate with built-in syntax.
+- **Dunder methods** — `__init__`, `__str__`, `__repr__`, `__eq__`, `__len__`, etc. let custom classes integrate with built-in syntax (`print`, `len`, `==`, ...).
 - **Class vs instance attributes** — class attributes are shared across all instances unless overridden per-instance.
-- `staticmethod` vs `classmethod` vs instance methods — static methods don't take self/cls; class methods take cls and are often used for alternate constructors.
+- `staticmethod` vs `classmethod` vs instance methods: static methods don't take `self`/`cls`; class methods take `cls` and are often used for alternate constructors.
 
 ---
 
@@ -63,7 +63,7 @@ with open("data.txt", "r", encoding="utf-8") as f:
 # file is automatically closed here, even on error
 ```
 
-Common modes: `r` (read), `w` (write, truncates!), `a` (append), `r+` (read/write). Add `b` for binary (e.g. `rb`).
+Common modes: `r` (read), `w` (write, truncates!), `a` (append), `r+` (read/write); add `b` for binary (e.g. `rb`).
 
 Reading line by line (memory-efficient for big files):
 ```python
@@ -88,7 +88,7 @@ with open("data.csv", newline="") as f:
 
 ## 4. Decorators
 
-A decorator wraps a function to add behavior without modifying the function itself:
+A decorator wraps a function to add behavior without modifying the function itself.
 ```python
 import functools, time
 
@@ -129,7 +129,7 @@ def retry(times: int):
 
 ## 5. Generators
 
-Generators produce values lazily, one at a time, instead of building a full list in memory:
+Generators produce values lazily, one at a time, instead of building a full list in memory.
 ```python
 def fibonacci(limit: int):
     a, b = 0, 1
@@ -143,7 +143,7 @@ for num in fibonacci(50):
 
 Why they matter:
 - **Memory efficiency** — never holds the entire sequence in memory at once.
-- **Composable** — generators can be chained with `map`, `filter`, generator expressions.
+- **Composable** — generators can be chained (`map`, `filter`, generator expressions).
 - `yield` pauses function execution and resumes from the same point on the next call.
 
 Generator expression (like a list comprehension but lazy):
@@ -151,7 +151,7 @@ Generator expression (like a list comprehension but lazy):
 squares = (x * x for x in range(1_000_000))  # no memory blow-up
 ```
 
-`yield from` delegates to a sub-generator:
+`yield from` delegates to a sub-generator (useful for composing generators):
 ```python
 def chain(*iterables):
     for it in iterables:
@@ -162,8 +162,7 @@ def chain(*iterables):
 
 ## 6. Async Programming
 
-Why async exists: for IO-bound work (network calls, file IO, DB queries), a program spends most of its time waiting. `async/await` lets a single thread juggle many waiting tasks instead of blocking on each one sequentially.
-
+Why async exists: for IO-bound work (network calls, file IO, DB queries), a program spends most of its time _waiting_. `async`/`await` lets a single thread juggle many waiting tasks instead of blocking on each one sequentially.
 ```python
 import asyncio, aiohttp
 
@@ -181,14 +180,13 @@ asyncio.run(main())
 ```
 
 Key concepts:
-- `async def` defines a coroutine — calling it returns a coroutine object; it doesn't run immediately.
+- `async def` defines a coroutine; calling it returns a coroutine object, it doesn't run immediately.
 - `await` hands control back to the event loop while waiting on something, letting other coroutines run.
 - `asyncio.gather` runs multiple coroutines concurrently and waits for all to finish.
-- Async is about **concurrency, not parallelism** — it's still single-threaded; it just avoids blocking on IO wait.
-- For CPU-bound work, use `multiprocessing` instead.
+- Async is about **concurrency**, not parallelism — it's still single-threaded; it just avoids blocking on IO wait. For CPU-bound work, use `multiprocessing` instead.
 
 Common mistake: mixing blocking calls (e.g. `time.sleep`, blocking `requests.get`) inside an `async def` function — this blocks the entire event loop. Use async-native equivalents (`asyncio.sleep`, `aiohttp`) instead.
 
 ---
 
-*Next to explore: context managers (`__enter__`/`__exit__`), metaclasses, multiprocessing vs threading vs asyncio tradeoffs.*
+_Next to explore: context managers (`__enter__`/`__exit__`), metaclasses, multiprocessing vs threading vs asyncio tradeoffs._
