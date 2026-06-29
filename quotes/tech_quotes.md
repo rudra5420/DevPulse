@@ -41,3 +41,5 @@ A running collection of quotes worth remembering. Kept short, attributed where t
 
 > Simplicity is the soul of efficiency.
 > — Austin Freeman
+> "A good programmer looks both ways before crossing a one-way street."
+> — Doug Linder
