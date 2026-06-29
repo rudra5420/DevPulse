@@ -38,3 +38,6 @@ A running collection of quotes worth remembering. Kept short, attributed where t
 
 > Optimism is an occupational hazard of programming; feedback is the treatment.
 > — Kent Beck
+
+> Simplicity is the soul of efficiency.
+> — Austin Freeman
