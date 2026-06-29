@@ -8,8 +8,8 @@ re-run repeatedly without producing duplicate or low-quality content.
 
 What this script does:
   1. Picks one maintenance action at random:
-       - add a new curated quote to quotes/tech_quotes.md, OR
-       - add a new curated resource link to resources/websites.md
+     - add a new curated quote to quotes/tech_quotes.md, OR
+     - add a new curated resource link to resources/websites.md
      Each action skips itself if its content pool is already exhausted
      (i.e. everything in the pool is already present in the file).
   2. Refreshes the 'Last updated' stamp in README.md.
@@ -43,11 +43,11 @@ from typing import Callable, Optional
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-REPO_ROOT    = Path(__file__).resolve().parent.parent
-QUOTES_FILE  = REPO_ROOT / "quotes" / "tech_quotes.md"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+QUOTES_FILE = REPO_ROOT / "quotes" / "tech_quotes.md"
 WEBSITES_FILE = REPO_ROOT / "resources" / "websites.md"
-README_FILE  = REPO_ROOT / "README.md"
-LOG_FILE     = REPO_ROOT / "logs" / "activity.log"
+README_FILE = REPO_ROOT / "README.md"
+LOG_FILE = REPO_ROOT / "logs" / "activity.log"
 COMMIT_MSG_FILE = REPO_ROOT / ".commitmessage.txt"
 
 # ---------------------------------------------------------------------------
@@ -55,12 +55,18 @@ COMMIT_MSG_FILE = REPO_ROOT / ".commitmessage.txt"
 # ---------------------------------------------------------------------------
 QUOTE_POOL: list[tuple[str, str]] = [
     ("Simplicity is the soul of efficiency.", "Austin Freeman"),
-    ("Code never lies; comments sometimes do.", "Ron Jeffries"),
+    ("Code never lies, comments sometimes do.", "Ron Jeffries"),
     ("The best error message is the one that never shows up.", "Thomas Fuchs"),
     ("Walking on water and developing software from a specification are easy if both are frozen.", "Edward V. Berard"),
     ("It is not enough for code to work.", "Robert C. Martin"),
     ("Optimism is an occupational hazard of programming; feedback is the treatment.", "Kent Beck"),
     ("A good programmer looks both ways before crossing a one-way street.", "Doug Linder"),
+    ("First, solve the problem. Then, write the code.", "John Johnson"),
+    ("Make it work, make it right, make it fast.", "Kent Beck"),
+    ("Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", "Martin Fowler"),
+    ("The most disastrous thing that you can ever learn is your first programming language.", "Alan Kay"),
+    ("Experience is the name everyone gives to their mistakes.", "Oscar Wilde"),
+    ("Programs must be written for people to read, and only incidentally for machines to execute.", "Harold Abelson"),
 ]
 
 RESOURCE_POOL: list[tuple[str, str, str]] = [
@@ -70,23 +76,30 @@ RESOURCE_POOL: list[tuple[str, str, str]] = [
     ("Distill.pub", "https://distill.pub", "Visual, in-depth explanations of machine learning concepts."),
     ("Real Python", "https://realpython.com", "In-depth Python tutorials and best-practice write-ups."),
     ("Codeforces", "https://codeforces.com", "Competitive programming contests and a deep archive of rated problems."),
+    ("CS50", "https://cs50.harvard.edu", "Harvard's free intro to computer science — excellent for fundamentals."),
+    ("roadmap.sh", "https://roadmap.sh", "Community-curated learning roadmaps for developers."),
+    ("Missing Semester", "https://missing.csail.mit.edu", "MIT course covering practical tools: shell, git, editors, and more."),
+    ("Refactoring Guru", "https://refactoring.guru", "Clear explanations of design patterns and refactoring techniques."),
 ]
 
 # ---------------------------------------------------------------------------
-# File helpers
+# Utility helpers
 # ---------------------------------------------------------------------------
 def now_str() -> str:
     """Current UTC time as a consistent display string."""
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
+
 def read_text(path: Path) -> str:
     """Read a file's text, returning an empty string if it doesn't exist yet."""
     return path.read_text(encoding="utf-8") if path.exists() else ""
+
 
 def write_text(path: Path, content: str) -> None:
     """Write text to a file, creating parent directories if needed."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
+
 
 def append_line(path: Path, line: str) -> None:
     """Append a single line to a file, creating it if needed."""
@@ -104,9 +117,10 @@ def add_quote() -> Optional[str]:
     if not candidates:
         return None
     quote_text, author = random.choice(candidates)
-    entry = f"\n> {quote_text}\n> \u2014 {author}\n"
-    write_text(QUOTES_FILE, content.rstrip() + "\n" + entry)
+    entry = f"\n> \"{quote_text}\"\n> — {author}\n"
+    write_text(QUOTES_FILE, content.rstrip() + entry)
     return f"added a quote by {author} to quotes/tech_quotes.md"
+
 
 def add_resource() -> Optional[str]:
     """Append one new curated resource link to resources/websites.md, if any remain."""
@@ -115,21 +129,23 @@ def add_resource() -> Optional[str]:
     if not candidates:
         return None
     name, url, description = random.choice(candidates)
-    entry = f"- **[{name}]({url})** \u2014 {description}\n"
-    write_text(WEBSITES_FILE, content.rstrip() + "\n" + entry)
+    entry = f"\n- [{name}]({url}) — {description}\n"
+    write_text(WEBSITES_FILE, content.rstrip() + entry)
     return f"added resource {name} to resources/websites.md"
+
 
 def refresh_readme_timestamp() -> str:
     """Update the 'Last updated ...' stamp at the bottom of README.md."""
     content = read_text(README_FILE)
-    stamp_line = f"*Last updated: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}*"
-    pattern = re.compile(r"\*Last updated:.*\*")
+    stamp_line = f"_Last updated {now_str()}_"
+    pattern = re.compile(r"_Last updated.*?_")
     if pattern.search(content):
         content = pattern.sub(stamp_line, content, count=1)
     else:
-        content = content.rstrip() + f"\n\n---\n\n{stamp_line}\n"
+        content = content.rstrip() + f"\n\n---\n{stamp_line}\n"
     write_text(README_FILE, content)
     return "refreshed the README timestamp"
+
 
 def log_activity(summary: str, touched_files: list[str]) -> None:
     """Append a single dated line to logs/activity.log describing this run."""
@@ -137,15 +153,19 @@ def log_activity(summary: str, touched_files: list[str]) -> None:
     line = f"{now_str()} | {files_str} | {summary}"
     append_line(LOG_FILE, line)
 
+
 def write_commit_message(message: str) -> None:
     """Write the commit message the CI workflow should use for this run."""
-    write_text(COMMIT_MSG_FILE, f"chore(auto): {message}\n")
+    write_text(COMMIT_MSG_FILE, f"chore(auto): {message}")
 
 # ---------------------------------------------------------------------------
-# Runner
+# Safe runner
 # ---------------------------------------------------------------------------
-def run_action_safely(name: str, action: Callable[[], Optional[str]]) -> Optional[str]:
-    """Run a single maintenance action, catching and reporting any error."""
+def run_action_safely(
+    name: str, action: Callable[[], Optional[str]]
+) -> Optional[str]:
+    """Run a single maintenance action, catching and reporting any error
+    instead of letting it crash the whole script run."""
     try:
         return action()
     except Exception:
@@ -153,11 +173,14 @@ def run_action_safely(name: str, action: Callable[[], Optional[str]]) -> Optiona
         traceback.print_exc()
         return None
 
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
 def main() -> int:
-    random.seed()  # default time-based seed
+    random.seed()  # default: time-based seed, different choice each run
 
     candidate_actions: list[tuple[str, Callable[[], Optional[str]], list[str]]] = [
-        ("add_quote",    add_quote,    ["quotes/tech_quotes.md"]),
+        ("add_quote", add_quote, ["quotes/tech_quotes.md"]),
         ("add_resource", add_resource, ["resources/websites.md"]),
     ]
     random.shuffle(candidate_actions)
@@ -165,6 +188,7 @@ def main() -> int:
     summary: Optional[str] = None
     touched_files: list[str] = []
 
+    # Try actions in random order until one actually produces new content.
     for name, action, files in candidate_actions:
         result = run_action_safely(name, action)
         if result:
@@ -173,8 +197,8 @@ def main() -> int:
             break
 
     if summary is None:
-        print("update.py: No new content this run — all pools already present in their target files. Nothing to commit.")
-        return 0  # not an error; a quiet run is a valid outcome
+        print("update.py: No new content available this run — all content pools already present in their target files.")
+        return 0  # not an error -- a quiet run is a valid outcome
 
     # Refresh the README timestamp as part of the same run.
     timestamp_summary = run_action_safely("refresh_readme_timestamp", refresh_readme_timestamp)
@@ -190,6 +214,7 @@ def main() -> int:
     except Exception:
         print("update.py: Failed to write to activity log.", file=sys.stderr)
         traceback.print_exc()
+        # Still proceed -- a missing log entry shouldn't block the commit.
 
     try:
         write_commit_message(summary)
@@ -197,8 +222,9 @@ def main() -> int:
         print("update.py: Failed to write commit message file.", file=sys.stderr)
         traceback.print_exc()
 
-    print(f"update.py: Done — {full_summary}")
+    print(f"update.py: Done. {full_summary}")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
