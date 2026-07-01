@@ -45,3 +45,5 @@ A running collection of quotes worth remembering. Kept short, attributed where t
 > — Doug Linder
 > "Walking on water and developing software from a specification are easy if both are frozen."
 > — Edward V. Berard
+> "Experience is the name everyone gives to their mistakes."
+> — Oscar Wilde
