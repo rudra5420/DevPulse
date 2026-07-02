@@ -49,3 +49,5 @@ A running collection of quotes worth remembering. Kept short, attributed where t
 > — Oscar Wilde
 > "The best error message is the one that never shows up."
 > — Thomas Fuchs
+> "Code never lies, comments sometimes do."
+> — Ron Jeffries
