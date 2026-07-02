@@ -72,4 +72,4 @@ Notes and journal entries are **never** auto-generated — those stay hand-writt
 *Last updated: 2026-06-29*
 
 ---
-_Last updated 2026-07-01 07:51 UTC_
+_Last updated 2026-07-02 06:51 UTC_

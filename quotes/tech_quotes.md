@@ -47,3 +47,5 @@ A running collection of quotes worth remembering. Kept short, attributed where t
 > — Edward V. Berard
 > "Experience is the name everyone gives to their mistakes."
 > — Oscar Wilde
+> "The best error message is the one that never shows up."
+> — Thomas Fuchs
